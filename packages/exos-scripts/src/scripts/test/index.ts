@@ -8,7 +8,7 @@ import jest from "jest";
 import getConfigToUse from "../../common/getConfigToUse";
 import hasArgument from "../../common/hasArgument";
 import jestConfig = require("./jest.config");
-import { Config } from "@jest/types";
+import type { Config } from "@jest/types";
 
 // Get config path (default or custom)
 const configToUse = getConfigToUse<Config.Argv>("test.js", jestConfig as any);
