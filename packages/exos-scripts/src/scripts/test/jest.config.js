@@ -5,6 +5,6 @@ module.exports = {
   },
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node"],
-  // If the CI environment variable is set, runc overage
+  // If the CI environment variable is set, run coverage
   collectCoverage: !!process.env.CI,
 };
