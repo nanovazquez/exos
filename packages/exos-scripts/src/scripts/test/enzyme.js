@@ -1,6 +1,5 @@
 /**
  * Lazy load enzyme adapter.
- * This avoids loading enzyme when running redux test suites.
  */
 
 const enzyme = require("enzyme/build");
