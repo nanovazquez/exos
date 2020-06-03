@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import path from "path";
-import { CLIEngine } from "eslint";
+const { ESLint } = require("eslint");
 import { SOURCE_PATH } from "../../common/paths";
 import getConfigToUse from "../../common/getConfigToUse";
 import eslintrcReact = require("./.eslintrc.react");
@@ -14,18 +14,47 @@ const eslintrc = isLibrary ? eslintrcLibrary : eslintrcReact;
 const configToUse = getConfigToUse<{}>("lint.js", eslintrc);
 console.info(configToUse.isCustom ? `Found custom lint at ${configToUse.customConfigPath}` : "Using default lint config");
 
-const cliEngine = new CLIEngine({
-  configFile: configToUse.isCustom ? configToUse.customConfigPath : path.resolve(__dirname, `.eslintrc.${isLibrary ? "library" : "react"}.js`),
-  fix: process.argv.indexOf("--fix") !== -1,
-  useEslintrc: true,
-});
+async function main() {
+  try {
+    const fixFiles = process.argv.indexOf("--fix") !== -1;
+    const filesFlagIndex = process.argv.indexOf("--files");
+  
+    // 1. Create an instance with the `fix` option.
+    const eslint = new ESLint({
+        baseConfig: configToUse.config,
+        fix: fixFiles,
+        useEslintrc: false,
+    });
+  
+    let codeFolders: string[];
+  
+    if (filesFlagIndex !== -1 && (process.argv.length - 1) > filesFlagIndex) {
+      codeFolders = [process.argv[filesFlagIndex + 1]];
+    } else {
+      codeFolders = [path.join(SOURCE_PATH, "/**/*.ts")];
+    }
+    // 2. Lint files. This doesn't modify target files.
+    const results = await eslint.lintFiles(codeFolders);
+  
+    if (fixFiles) {
+      // Modify the files with the fixed code.
+      await ESLint.outputFixes(results);
+    }
+  
+    // 4. Format the results.
+    const formatter = await eslint.loadFormatter("stylish");
+    const resultText = formatter.format(results);
+  
+    // 5. Output it.
+    console.log(resultText);
+  
+    if (results.errorCount > 0 || results.warningCount > 0) {
+      process.exit(1);
+    }
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
+};
 
-const codeFolders = [path.join(SOURCE_PATH, "/**/*.ts")];
-const report = cliEngine.executeOnFiles(codeFolders);
-
-if (report.errorCount > 0 || report.warningCount > 0) {
-  // Output to console and return failure signal
-  const formatter = cliEngine.getFormatter();
-  console.log(formatter(report.results));
-  process.exit(1);
-}
+main();
