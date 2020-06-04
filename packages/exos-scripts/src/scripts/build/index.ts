@@ -37,7 +37,7 @@ compiler.run((err: Error, stats: webpack.Stats) => {
     console.error(chalk.red("❌ There was an error during build."));
     console.error(executionStats.errors[0]);
 
-    // Exit with a fail code
+    // Exit with a failure code
     process.exit(1);
   }
 
