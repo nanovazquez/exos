@@ -16,27 +16,25 @@ console.info(configToUse.isCustom ? `Found custom lint at ${configToUse.customCo
 
 async function main() {
   try {
-    const fixFiles = process.argv.indexOf("--fix") !== -1;
+    const hasFix = process.argv.indexOf("--fix") !== -1;
     const filesFlagIndex = process.argv.indexOf("--files");
+    const hasFiles = filesFlagIndex !== -1;
   
     // 1. Create an instance with the `fix` option.
     const eslint = new ESLint({
-        baseConfig: configToUse.config,
-        fix: fixFiles,
-        useEslintrc: false,
+      baseConfig: configToUse.config,
+      fix: hasFix,
+      useEslintrc: false,
     });
   
     let codeFolders: string[];
-  
-    if (filesFlagIndex !== -1 && (process.argv.length - 1) > filesFlagIndex) {
-      codeFolders = [process.argv[filesFlagIndex + 1]];
-    } else {
-      codeFolders = [path.join(SOURCE_PATH, "/**/*.ts")];
-    }
+
+    codeFolders = [path.join(SOURCE_PATH, "/**/*.{ts,tsx}")];
+    
     // 2. Lint files. This doesn't modify target files.
     const results = await eslint.lintFiles(codeFolders);
   
-    if (fixFiles) {
+    if (hasFix) {
       // Modify the files with the fixed code.
       await ESLint.outputFixes(results);
     }
