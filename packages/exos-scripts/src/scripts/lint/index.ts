@@ -34,7 +34,7 @@ async function main() {
     // 2. Lint files. This doesn't modify target files.
     const results = await eslint.lintFiles(codeFolders);
   
-   // 3. If "--fix" is provided, modify the files with the fixed code.
+    // 3. If "--fix" is provided, modify the files with the fixed code.
     if (hasFix) {
       await ESLint.outputFixes(results);
     }
