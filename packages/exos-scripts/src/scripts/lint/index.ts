@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
 import path from "path";
-const { ESLint } = require("eslint");
 import { SOURCE_PATH } from "../../common/paths";
 import getConfigToUse from "../../common/getConfigToUse";
 import eslintrcReact = require("./.eslintrc.react");
+
+// Use require because the ESLint types aren't updated yet.
+const { ESLint } = require("eslint");
 import eslintrcLibrary = require("./.eslintrc.library");
 
 const isLibrary = process.argv.find((item) => item === "--type=library") !== null;
